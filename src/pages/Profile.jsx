@@ -1,8 +1,12 @@
-import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 
 export default function Profile() {
     const { user, updateUser, logout } = useAuth();
+    const navigate = useNavigate();
+    const { clearCart } = useCart();
     const [isEditing, setIsEditing] = useState(false);
 
     const [form, setForm] = useState(user);
@@ -26,6 +30,12 @@ export default function Profile() {
         updateUser(form);
         setIsEditing(false);
     };
+
+    const handleLogout = () => {
+        logout();
+        clearCart();
+        navigate("/"); 
+    }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
@@ -122,7 +132,7 @@ export default function Profile() {
                 )}
 
                 <button
-                    onClick={logout}
+                    onClick={handleLogout}
                     className="ml-auto bg-red-500 text-white px-4 py-2 rounded"
                 >
                     Logout
