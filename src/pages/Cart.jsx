@@ -128,12 +128,12 @@ export default function Cart() {
                   <span>₹{grandTotal}</span>
                 </div>
               </div>
-              <button 
-                className="mt-6 w-full bg-black text-white py-3 rounded-lg shadow-md hover:bg-gray-800 font-semibold">
-                    <Link to="/checkout">
-                        Proceed to Checkout
-                    </Link>
-              </button>
+              <Link 
+                to="/checkout"
+                className="mt-6 w-full bg-black text-white py-3 rounded-lg shadow-md hover:bg-gray-800 font-semibold inline-block text-center"
+              >
+                Proceed to Checkout
+              </Link>
             </div>
           </div>
         </div>

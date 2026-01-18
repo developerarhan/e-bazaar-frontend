@@ -7,6 +7,7 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import Success from './pages/Success';
+import PaymentFailed from './pages/PaymentFailed';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
@@ -73,6 +74,7 @@ function App() {
         />
         
         <Route path="/success" element={<Success />} />
+        <Route path='/payment-failed' element={<PaymentFailed />} />
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register />} />
       </Routes>

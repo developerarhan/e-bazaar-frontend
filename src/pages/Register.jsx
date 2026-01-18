@@ -12,9 +12,9 @@ export default function Register() {
         password: ""
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        register(form);
+        await register(form);
         navigate("/profile");
     };
 

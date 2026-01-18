@@ -91,9 +91,16 @@
                             navigate("/success");
                         } catch (err) {
                             console.log(err)
-                            alert("Payment verification failed");
+                            navigate("/payment-failed");
                         }
                     },
+
+                    modal: {
+                        ondismiss: function() {
+                            navigate("/payment-failed");
+                        }
+                    },
+
                     prefill: {
                         name: form.name,
                         contact: form.phone,
@@ -104,6 +111,12 @@
                 };
 
                 const rzp = new window.Razorpay(options);
+
+                rzp.on("payment.failed", function(response) {
+                    console.log("Payment Failed:", response);
+                    navigate("/payment-failed");
+                });
+                
                 rzp.open();
 
             } catch (err) {
