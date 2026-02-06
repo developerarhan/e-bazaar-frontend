@@ -6,6 +6,7 @@ export default function Register() {
     const { register } = useAuth();
     const navigate = useNavigate();
 
+    const [ loading, setLoading ] = useState(false);
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -14,8 +15,15 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await register(form);
-        navigate("/profile");
+        setLoading(true);
+        try{
+            await register(form);
+            navigate("/profile");
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleChange = (e) => {
@@ -57,8 +65,11 @@ export default function Register() {
                 className="w-full p-2 rounded mb-3 bg-white dark:bg-gray-800 text-black dark:text-white border dark:border-gray-700"
             />
 
-            <button className="w-full bg-black text-white py-2 rounded cursor-pointer">
-                Register
+            <button 
+                type="submit"
+                className={`w-full bg-black text-white py-2 rounded cursor-pointer ${loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}}`}
+            >
+                {loading ? "Registering..." : "Register"}
             </button>
 
             <p className="text-sm mt-4 text-center dark:text-black">

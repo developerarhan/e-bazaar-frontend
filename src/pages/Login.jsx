@@ -6,6 +6,7 @@ export default function Login() {
     const { login } = useAuth();
     const navigate = useNavigate();
 
+    const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({
         email: "",
         password: ""
@@ -17,9 +18,16 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true)
 
-        await login(form.email, form.password);
-        navigate("/profile");
+        try {
+            await login(form.email, form.password);
+            navigate("/profile");
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -48,8 +56,12 @@ export default function Login() {
                     className="w-full p-2 rounded mb-3 bg-white dark:bg-gray-800 text-black dark:text-white border dark:border-gray-700"
                 />
 
-                <button className="w-full bg-black text-white py-2 rounded cursor-pointer">
-                    Login
+                <button 
+                    type="submit"
+                    disabled={loading}
+                    className={`w-full bg-black text-white py-2 rounded cursor-pointer ${loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                >
+                    {loading ? "Logging in..." : "Login"}
                 </button>
 
                 <p className="text-sm mt-4 text-center dark:text-black">
