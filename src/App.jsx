@@ -9,12 +9,18 @@ import Orders from './pages/Orders';
 import Success from './pages/Success';
 import PaymentFailed from './pages/PaymentFailed';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgetPassword';
+import ResetPassword from './pages/ResetPassword';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
-import MyOrders from './pages/MyOrders';
+import OAuthCallback from './pages/OAuthCallback';
 import Tracking from './pages/Tracking';
+import VerifyEmail from './pages/VerifyEmail';
 import PrivateRoute from './routes/PrivateRoute';
 import Footer from './components/Footer';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import Contact from './pages/Contact';
 import { useTheme } from './context/ThemeContext';
 
 
@@ -22,7 +28,11 @@ function App() {
   const { theme } = useTheme();
 
   return (
-    <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${
+      theme === "dark" 
+        ? "bg-neutral-950 text-neutral-50" 
+        : "bg-neutral-50 text-neutral-900"
+    }`}>
       <NavBar />
 
       <Routes>
@@ -30,6 +40,9 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/terms" element={<TermsOfService />} />
 
         {/* Protected Routes */}
         <Route 
@@ -57,14 +70,6 @@ function App() {
           } 
         />
         <Route 
-          path="/my-orders" 
-          element={
-            <PrivateRoute>
-              <MyOrders />
-            </PrivateRoute>
-          } 
-        />
-        <Route 
           path="/tracking/:orderId" 
           element={
             <PrivateRoute>
@@ -77,6 +82,10 @@ function App() {
         <Route path='/payment-failed' element={<PaymentFailed />} />
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
+        <Route path="/oauth/google/callback" element={<OAuthCallback />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
       </Routes>
 
       <Footer />

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import api from "../services/api";
 
 const AuthContext = createContext();
@@ -13,19 +13,48 @@ export function AuthProvider({ children }) {
     }
     return null;
   });
+  const [loading, setLoading] = useState(true);
+  // loading=true on startup because we don't know if user
+  // is logged in until we check with the server
+
+  // On app startup, check if the user has a valid session
+    // The cookie is sent automatically — we just need the user data
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await api.get("accounts/profile/");
+        setUser(res.data);
+      } catch (error) {
+        // No valid session - user is not logged in
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  // Listen for forced logout events (from axios interceptor)
+  useEffect(() => {
+    const handleForcedLogout = () => {
+        setUser(null);
+    };
+
+    window.addEventListener('auth:logout', handleForcedLogout);
+    return () => window.removeEventListener('auth:logout', handleForcedLogout);
+  }, []);
 
   const login = async (email, password) => {
     try{
         const res = await api.post("accounts/login/", {
             email,
             password,
-        });
-
-        localStorage.setItem("token", res.data.tokens.access);
-        console.log(res.data.user);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-
+        }, { withCredentials: true });
+        // Cookies are set by the browser automatically from Set-Cookie header
+        // We just save the user data
         setUser(res.data.user);
+        return res.data.user;
     } catch(error) {
         console.error("Login failed", error.response?.data);
         throw error;
@@ -34,27 +63,44 @@ export function AuthProvider({ children }) {
 
   const register = async (data) => {
     const res = await api.post("accounts/register/", data);
-    console.log("register", res.data.access);
-    console.log("register", res.data.user);
-    localStorage.setItem("token", res.data.access);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
 
-    setUser(res.data.user);
+    return res.data;  // { message, email }
   };
 
   const updateUser = (newData) => {
-    setUser(newData);
-    localStorage.setItem("user", JSON.stringify(newData));
+    setUser(prev => ({ ...prev, ...newData }))
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
+  // For OAuth login — replaces user entirely
+    // No merging with previous session
+  const setOAuthUser = (userData) => {
+      setUser(userData);
   };
+
+  const logout = async () => {
+    try {
+      await api.post("accounts/logout/");
+    } catch (error) {
+      // Even if server logout fails, clear local state
+      console.error("Logout error:", error);
+    } finally {
+      setUser(null);
+      // Cookies are cleared by the server's response
+    }
+  };
+
+  // Show nothing while checking auth status
+  // Prevents flash of login page for authenticated users
+  if (loading) {
+      return (
+          <div className="min-h-screen flex items-center justify-center">
+              <p>Loading...</p>
+          </div>
+      );
+  }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, updateUser }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, setOAuthUser, isAuthenticated: !!user, }}>
       {children}
     </AuthContext.Provider>
   );
