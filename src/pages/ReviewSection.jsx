@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Sparkles, ChevronDown, ChevronUp, Loader } from "lucide-react";
 import { StarDisplay } from "../components/StarRating";
 import ReviewForm from "../components/rating/ReviewForm";
 import RatingSummary from "../components/rating/RatingSummary";
 import ReviewCard from "../components/rating/ReviewCard";
 import api from "../services/api";
+import { AISummary } from "../components/reviews/AISummary";
+import SummaryText from "../components/reviews/SummaryText";
+
 
 export default function ReviewSection({
     productId,
@@ -135,6 +139,12 @@ export default function ReviewSection({
                     />
                 </div>
             )}
+
+            {/* ── AI Summary — NEW, placed above rating breakdown ── */}
+            <AISummary
+                productId={productId}
+                reviewCount={reviewMeta.review_count}
+            />
 
             {/* Primary Grid Content */}
             {reviews.length > 0 ? (
